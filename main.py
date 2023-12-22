@@ -251,7 +251,7 @@ async def get_company_data(session, dict_ids, fund_company, company_name, sheet_
         print("There are not enough tables.")
 
     return data_dict
-
+totalData = []
 async def process_fund_data(session, fund_company, fund_id, sheet_data, fund_not_has_data):
     print(f"Processing {fund_company}, Fund ID: {fund_id}")
 
@@ -259,7 +259,8 @@ async def process_fund_data(session, fund_company, fund_id, sheet_data, fund_not
 
     if all_data:
         # Create a single DataFrame for all data
-        total_data_df = pd.DataFrame(all_data)
+        totalData.extend(all_data)
+        total_data_df = pd.DataFrame(totalData)
 
         # Save the DataFrame to Excel using aiofiles for asynchronous file writing
         await to_excel(total_data_df, "totaldata.xlsx")
