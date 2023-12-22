@@ -18,9 +18,20 @@ async def to_excel(df, filename):
 
 
 
-async def fetch(session, url, params=None, data=None, headers=None):
-    async with session.post(url, params=params, data=data, headers=headers) as response:
-        return await response.text()
+# async def fetch(session, url, params=None, data=None, headers=None):
+#     async with session.post(url, params=params, data=data, headers=headers) as response:
+#         return await response.text()
+        
+async def fetch(session, url, params=None, data=None, headers=None, retries=3):
+    for attempt in range(retries):
+        try:
+            async with session.post(url, params=params, data=data, headers=headers) as response:
+                return await response.text()
+        except (aiohttp.ClientResponseError, aiohttp.client_exceptions.ServerDisconnectedError) as e:
+            print(f"Error: {e}. Retrying {attempt + 1}/{retries}")
+            await asyncio.sleep(2)  # Wait for a short duration before retrying
+    return None
+
 
 
 async def get_last_page(session, fund_id, page):
@@ -276,7 +287,9 @@ async def main():
     global sheet_data
     global fund_not_has_data
 
-    async with aiohttp.ClientSession() as session:
+    # async with aiohttp.ClientSession() as session:
+    connector = aiohttp.TCPConnector(limit=10)  # Adjust the limit based on your needs
+    async with aiohttp.ClientSession(connector=connector) as session:
         for fund_id in df['Fund']:
             if fund_id == '0' or fund_id == '@@-$$-@@-$$-@@':
                 continue
