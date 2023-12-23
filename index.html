@@ -1,0 +1,697 @@
+
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<title>  Meeting Search</title>
+<!--  Including static.css code here..strt -->
+<link href="./css/static.css" rel="stylesheet" type="text/css" />
+<!--  Including static.css code here..end -->
+<style type="text/css">
+/*Removing scriptlets and accessing the dynamic styles using struts 2 tags */
+
+/* CSS Document */
+
+/* Common Elements Starts ---------*/
+#wd .header { background: #FFFFFF; color:null; 
+border:solid 1px #661155;    }
+
+#wd .footer { background: #FAF9F6; }
+
+#wd .inst-text{}
+
+#wd .top-nav { background:#FAF9F6; }  
+/* Common Elements Ends ---------*/
+
+
+/* Global Styles Starts -----------*/
+
+#wd {color:#666666;font-family:Arial;font-weight:bold; background: #FAF9F6;} /* Page BG color*/
+
+#wd h1 { color:#666666;font-family:Arial; }
+
+#wd label { color:#666666;font-family:Arial; }
+
+#wd data-field {color:#666666;font-family:Arial;font-weight:normal;} 
+
+/* Data Grid (Table) Classes */
+#wd table.tbl, #wd table.tbl td, #wd th {border:solid 1px #615E5C; color:#666666;font-family:Arial;} 
+#wd table.tbl th { color:#000000;font-family:Arial;font-weight:bold; background:#C2BABA; }
+#wd th.a { color:#000000;font-family:Arial;font-weight:bold; background:#C2BABA; }
+
+#wd tr.Row {background:#EBEBEB;}
+#wd tr.AltRow {background:#FAF9F6;}	
+
+#wd input[type="submit"], #wd input[type="reset"], #wd input[type="button"] { border:solid 1px #615E5C; background:#FAF9F6; color:#666666;font-family:Arial;}
+.btn2 { border:solid 1px #615E5C; background:#FAF9F6; color:#666666;font-family:Arial;}
+
+#wd a { color: #000000 }
+#wd a:hover { color: #666666}
+
+#wd .top-nav li { background: #FAF9F6; border:solid 1px #615E5C; }
+#wd .top-nav li a, #wd .top-nav li a:hover { color:#666666; }
+
+#wd .pg-btns li{ background:#FAF9F6; color:#666666;font-family:Arial;font-weight:bold; border:solid 1px #615E5C; }
+#wd .pg-btns li a, #wd .pg-btns li a:hover { color:#666666;font-family:Arial;font-weight:bold; }
+/* Global Styles Starts -----------*/
+
+/* Page level styles-------------------*/
+
+/*Fund selection*/
+#wd .alphabets a { color:#666666;font-family:Arial;font-size:15px;}
+/* END Page level styles-------------------*/
+
+</style>
+
+
+
+<script type="text/javascript">
+var currSortByColumn = 'COMPANY_NAME';
+var currSortingOrder = 'ASC';
+var currPgNbr = '3';
+var totalPages = '11';
+  
+  function gotoPage(pageName) {
+	//document.forms[0].action = "<html:rewrite page='/wd.do'/>"+"?siteId="+document.forms[0].siteId.value; 
+	//alert('Site Id:'+document.forms[0].siteId.value);
+	var wdurl='/WebDisclosure/wdFundSelection';
+	if(pageName != 'fundPage' && pageName != 'returnSearch'){
+	    var aNumbr = parseInt(currPgNbr);
+		if(pageName == 'next'){
+		     if(parseInt(currPgNbr) < parseInt(totalPages)) {
+		       aNumbr = ++currPgNbr;
+		     }else { return false;}		     
+		}else if(pageName == 'prev') {
+		     if(parseInt(currPgNbr) > 1) {
+		       aNumbr = --currPgNbr;
+		     }else { return false; }
+		}else if(pageName == 'first') {
+		     if(parseInt(currPgNbr) != 1) {
+		       aNumbr = 1;
+		     }else { return false; }		     
+		}else if(pageName == 'last') {
+		     if(parseInt(currPgNbr) != parseInt(totalPages)) {
+		       aNumbr = totalPages;
+		     }else { return false; }		     
+		}
+        document.forms[0].currentPageNumber.value = aNumbr;	
+		
+		//SER 58111..
+		 wdurl='/WebDisclosure/wdMeetingList';
+	
+	   
+		
+	}
+	//Reset any previous selectins  when user clicks Return to Search.
+	if(pageName == 'returnSearch')
+	{
+	
+	 document.forms[0].tickerSymbol.value = "";
+	 document.forms[0].companyName.value = "";
+	 document.forms[0].companyNameStartsWith.value = "";
+	 document.forms[0].fundId.value = "";
+     document.forms[0].fundName.value = "";
+     document.forms[0].fundIdTmp.value = "";
+	}
+	
+	document.forms[0].action=wdurl;
+	
+	document.forms[0].submit();
+  } 
+  
+
+ function gotoMeetingDetail(meetingId, meetingDate, meetingTypeDesc, securityId, ticker, isin, companyName) {
+    document.forms[0].meetingId.value = meetingId;
+	document.forms[0].meetingDate.value = meetingDate;
+	document.forms[0].meetingTypeDesc.value = meetingTypeDesc;
+	document.forms[0].securityId.value = securityId;
+	document.forms[0].tickerSymbolPage3.value = ticker;
+	document.forms[0].isin.value = isin;
+	document.forms[0].compNamePage2To3.value = companyName;	
+	//SER 58111		
+	document.forms[0].submit();
+  }
+   
+   function adjustButtons() {
+	 if(parseInt(currPgNbr) == 1) {
+       document.getElementById("first_btn").style.display = "none";
+       document.getElementById("prev_btn").style.display = "none";
+     }
+   
+     if(parseInt(totalPages) == 1) {
+       document.getElementById("pageNbrText").style.display = "none";
+       document.getElementById("first_btn").style.display = "none";
+       document.getElementById("next_btn").style.display = "none";
+       document.getElementById("prev_btn").style.display = "none";
+       document.getElementById("last_btn").style.display = "none";
+     }else {
+       if(parseInt(totalPages) == parseInt(currPgNbr)){ //when on last page
+            document.getElementById("next_btn").style.display = "none";
+       		document.getElementById("last_btn").style.display = "none";       
+       }
+       if(parseInt(totalPages) == parseInt(currPgNbr)){ //when on last or first page
+            document.getElementById("next_btn").style.display = "none";
+       		document.getElementById("last_btn").style.display = "none";       
+       }       
+     }     
+   }   
+   
+   function sortByHeader(sortFieldId, changeSortingOrder) {
+  // alert('sortFieldId:'+sortFieldId);
+  // alert('changeSortingOrder:'+changeSortingOrder);
+  // alert('currSortByColumn:'+currSortByColumn);
+     if(sortFieldId == null){
+     	sortFieldId = currSortByColumn;
+     }
+
+     if(changeSortingOrder == null){
+       changeSortingOrder = 'Y';
+     }
+     
+     if(sortFieldId != null && currSortByColumn != null && sortFieldId == currSortByColumn ) {
+     
+        if(changeSortingOrder == 'Y') {
+	        if(currSortingOrder == 'ASC') {
+	          document.forms[0].sortingOrder.value = 'DESC';
+	        }else {
+	          document.forms[0].sortingOrder.value = 'ASC';
+	        }
+	     }else {
+	          document.forms[0].sortingOrder.value = currSortingOrder;
+	     }
+     }else {
+        document.forms[0].sortingOrder.value = 'ASC';     
+     }
+     
+     document.forms[0].sortByColumn.value = sortFieldId;
+     document.forms[0].currentPageNumber.value = 1;
+   
+   	//SER 58111..
+   	
+   	var wdurl='/WebDisclosure/wdMeetingList';
+   	document.forms[0].action=wdurl;
+     document.forms[0].submit();	 
+   }
+</script>
+</head>
+
+
+
+<form id="wdMeetingDetail" name="wdMeetingDetail" action="/WebDisclosure/wdMeetingDetail" method="post">
+<input type="hidden" name="siteId" value="JPMFunds" id="wdMeetingDetail_siteId"/>
+<input type="hidden" name="fundId" value="18264" id="wdMeetingDetail_fundId"/>
+<input type="hidden" name="fundName" value="" id="wdMeetingDetail_fundName"/>
+<input type="hidden" name="fundIdTmp" value="" id="wdMeetingDetail_fundIdTmp"/>
+<input type="hidden" name="previewkey" value="" id="wdMeetingDetail_previewkey"/>
+<input type="hidden" name="currentPageNumber" value="3" id="wdMeetingDetail_currentPageNumber"/>
+<input type="hidden" name="meetingId" value="" id="wdMeetingDetail_meetingId"/>
+<input type="hidden" name="sortByColumn" value="COMPANY_NAME" id="wdMeetingDetail_sortByColumn"/>
+<input type="hidden" name="sortingOrder" value="ASC" id="wdMeetingDetail_sortingOrder"/>
+<input type="hidden" name="fundCompNameSection" value="" id="wdMeetingDetail_fundCompNameSection"/>
+<input type="hidden" name="tickerSymbol" value="" id="wdMeetingDetail_tickerSymbol"/>
+<input type="hidden" name="companyName" value="" id="wdMeetingDetail_companyName"/>
+<input type="hidden" name="companyNameStartsWith" value="" id="wdMeetingDetail_companyNameStartsWith"/>
+<input type="hidden" name="meetingDate" value="" id="wdMeetingDetail_meetingDate"/>
+<input type="hidden" name="meetingTypeDesc" value="" id="wdMeetingDetail_meetingTypeDesc"/>
+<input type="hidden" name="securityId" value="" id="wdMeetingDetail_securityId"/>
+<input type="hidden" name="tickerSymbolPage3" value="" id="wdMeetingDetail_tickerSymbolPage3"/>
+<input type="hidden" name="isin" value="" id="wdMeetingDetail_isin"/>
+<input type="hidden" name="compNamePage2To3" value="" id="wdMeetingDetail_compNamePage2To3"/>
+
+<body onload="adjustButtons()">
+    <div id="wd">
+     <style> body {display: none ;} </style>
+<script LANGUAGE="JavaScript">
+if (top!=self){ 
+
+    top.location = self.location; 
+}
+else {
+
+    
+    document.getElementsByTagName("BODY")[0].style.display="block";
+}
+</script>
+<div class="header clearfix">
+
+  <!--  Get Image URL -->
+  
+
+  
+  
+   <!--  Get Image Alt txt -->
+   
+   
+    
+  
+  
+   
+   <!--  Get imageHref -->
+    
+    
+  
+  <!--  Get Inst Name  --> 
+   
+  
+  
+  
+	    <img onmouseover="this.style.cursor='hand'" class="left"  alt='' src="https://materials.proxyvote.com/logos/47ff105a-d266-4551-b845-d04e27fa39a6.jpg"  onclick="window.open('#')"/>
+       
+        <div class="header-txt left"></div>
+          <span class="clear"></span>
+</div> 
+   	  <div class="top-nav clearfix">
+    	<ul>
+
+			
+			
+			<li><a href="javascript:void(0)" onclick="gotoPage('returnSearch')" onmouseover="this.style.cursor='hand'">Return to Search</a> </li>
+        	<!-- Show Fund Selection button in meeting list only when there are atleast 2 funds.-->
+        	 
+        	<li><a href="javascript:void(0)" onclick="gotoPage('fundPage')" onmouseover="this.style.cursor='hand'">Fund Search</a> </li>
+        	
+            <li><a href="javascript:this.parent.close()">Logout</a></li>
+        </ul>  
+     </div>
+     
+    <div class="content">
+    <h1>Meeting Search</h1><br/>
+    
+	
+	
+		<h1>null</h1><br />
+	   
+
+    <div class="clearfix">
+        	<br/><div id="pageNbrText" class="pg-text">Page 3 of 11</div>
+      <div class="pg-btns">    	
+    		<ul>
+        	<li id="first_btn"><a href="javascript:void(0)" onclick="gotoPage('first')" onmouseover="this.style.cursor='hand'">|<< First</a></li>
+           <li id="prev_btn"><a href="javascript:void(0)" onclick="gotoPage('prev')" onmouseover="this.style.cursor='hand'"> << Prev</a></li>
+            <li id="next_btn"><a href="javascript:void(0)" onclick="gotoPage('next')" onmouseover="this.style.cursor='hand'"> Next &gt;&gt;</a></li>
+            <li id="last_btn"><a href="javascript:void(0)" onclick="gotoPage('last')" onmouseover="this.style.cursor='hand'">Last &gt;&gt;|</a></li>
+        </ul>
+      </div>
+        </div>
+        <br />
+        <table border="0" cellspacing="0" cellpadding="3" class="tbl">
+  <tr>
+    <th> 
+      <div class="left-align" style="position:static;"> 
+          <a href="javascript:sortByHeader('COMPANY_NAME', 'Y')">Company Name
+            
+           
+           
+              
+                <img  onclick="sortByHeader('COMPANY_NAME', 'Y')" src="./images/sort_off.gif"/>
+             
+             
+             
+       
+           
+                
+          </a>
+      </div>
+    </th>
+    
+    <th>
+          <a href="javascript:sortByHeader('TICKER', 'Y')">
+             Ticker
+           
+             
+                 
+          </a>
+    </th>
+    
+    <th>
+           <a href="javascript:sortByHeader('SECURITY', 'Y')">
+         Security Id
+           
+                     
+           </a>
+    </th>
+    
+    <th>
+          <a href="javascript:sortByHeader('MEETING_DATE', 'Y')">
+              Meeting Date
+           
+                        
+          </a>
+    </th>
+    
+    <th>
+          <a href="javascript:sortByHeader('MEETING_TYPE_DESC', 'Y')">
+                Meeting Type 
+           
+              
+                 
+          </a>
+    </th>
+  </tr>
+<!--  Below chk shud for not empty.. -->
+
+
+
+
+
+
+
+
+
+
+
+  <tr class='Row' >
+   <td><div class="left-align" style="position:static;">
+<a href="javascript:gotoMeetingDetail('3243842',
+'21-JUN-2023',
+'Annual',
+'185123106',
+'CWAN  ',
+'US1851231068',
+'CLEARWATER ANALYTICS HOLDINGS, INC.                                             ');" onmouseover="this.style.cursor='hand'">CLEARWATER ANALYTICS HOLDINGS, INC.                                             </a>
+    </div></td>
+    <td>CWAN   </td>
+    <td>185123106</td>
+    <td>21-JUN-2023</td>
+    <td>Annual</td>
+  </tr>
+
+
+	
+
+
+
+
+
+
+
+
+  <tr class='AltRow' >
+   <td><div class="left-align" style="position:static;">
+<a href="javascript:gotoMeetingDetail('3177933',
+'19-APR-2023',
+'Annual',
+'200525103',
+'CBSH  ',
+'US2005251036',
+'COMMERCE BANCSHARES, INC.                                                       ');" onmouseover="this.style.cursor='hand'">COMMERCE BANCSHARES, INC.                                                       </a>
+    </div></td>
+    <td>CBSH   </td>
+    <td>200525103</td>
+    <td>19-APR-2023</td>
+    <td>Annual</td>
+  </tr>
+
+
+	
+
+
+
+
+
+
+
+
+  <tr class='Row' >
+   <td><div class="left-align" style="position:static;">
+<a href="javascript:gotoMeetingDetail('3173406',
+'28-JUN-2023',
+'Annual',
+'21874C102',
+'CNM   ',
+'US21874C1027',
+'CORE & MAIN, INC.                                                               ');" onmouseover="this.style.cursor='hand'">CORE &amp; MAIN, INC.                                                               </a>
+    </div></td>
+    <td>CNM    </td>
+    <td>21874C102</td>
+    <td>28-JUN-2023</td>
+    <td>Annual</td>
+  </tr>
+
+
+	
+
+
+
+
+
+
+
+
+  <tr class='AltRow' >
+   <td><div class="left-align" style="position:static;">
+<a href="javascript:gotoMeetingDetail('3218469',
+'16-MAY-2023',
+'Annual',
+'229663109',
+'CUBE  ',
+'US2296631094',
+'CUBESMART                                                                       ');" onmouseover="this.style.cursor='hand'">CUBESMART                                                                       </a>
+    </div></td>
+    <td>CUBE   </td>
+    <td>229663109</td>
+    <td>16-MAY-2023</td>
+    <td>Annual</td>
+  </tr>
+
+
+	
+
+
+
+
+
+
+
+
+  <tr class='Row' >
+   <td><div class="left-align" style="position:static;">
+<a href="javascript:gotoMeetingDetail('3182059',
+'26-APR-2023',
+'Annual',
+'229899109',
+'CFR   ',
+'US2298991090',
+'CULLEN/FROST BANKERS, INC.                                                      ');" onmouseover="this.style.cursor='hand'">CULLEN/FROST BANKERS, INC.                                                      </a>
+    </div></td>
+    <td>CFR    </td>
+    <td>229899109</td>
+    <td>26-APR-2023</td>
+    <td>Annual</td>
+  </tr>
+
+
+	
+
+
+
+
+
+
+
+
+  <tr class='AltRow' >
+   <td><div class="left-align" style="position:static;">
+<a href="javascript:gotoMeetingDetail('3091302',
+'21-SEP-2022',
+'Special',
+'G2717B108',
+'CWK   ',
+'GB00BFZ4N465',
+'CUSHMAN & WAKEFIELD GLOBAL, INC                                                 ');" onmouseover="this.style.cursor='hand'">CUSHMAN &amp; WAKEFIELD GLOBAL, INC                                                 </a>
+    </div></td>
+    <td>CWK    </td>
+    <td>G2717B108</td>
+    <td>21-SEP-2022</td>
+    <td>Special</td>
+  </tr>
+
+
+	
+
+
+
+
+
+
+
+
+  <tr class='Row' >
+   <td><div class="left-align" style="position:static;">
+<a href="javascript:gotoMeetingDetail('3214863',
+'11-MAY-2023',
+'Annual',
+'G2717B108',
+'CWK   ',
+'GB00BFZ4N465',
+'CUSHMAN & WAKEFIELD PLC                                                         ');" onmouseover="this.style.cursor='hand'">CUSHMAN &amp; WAKEFIELD PLC                                                         </a>
+    </div></td>
+    <td>CWK    </td>
+    <td>G2717B108</td>
+    <td>11-MAY-2023</td>
+    <td>Annual</td>
+  </tr>
+
+
+	
+
+
+
+
+
+
+
+
+  <tr class='AltRow' >
+   <td><div class="left-align" style="position:static;">
+<a href="javascript:gotoMeetingDetail('3212481',
+'01-JUN-2023',
+'Annual',
+'24477E103',
+'DH    ',
+'US24477E1038',
+'DEFINITIVE HEALTHCARE CORP.                                                     ');" onmouseover="this.style.cursor='hand'">DEFINITIVE HEALTHCARE CORP.                                                     </a>
+    </div></td>
+    <td>DH     </td>
+    <td>24477E103</td>
+    <td>01-JUN-2023</td>
+    <td>Annual</td>
+  </tr>
+
+
+	
+
+
+
+
+
+
+
+
+  <tr class='Row' >
+   <td><div class="left-align" style="position:static;">
+<a href="javascript:gotoMeetingDetail('3189769',
+'25-APR-2023',
+'Annual',
+'25960R105',
+'PLOW  ',
+'US25960R1059',
+'DOUGLAS DYNAMICS, INC                                                           ');" onmouseover="this.style.cursor='hand'">DOUGLAS DYNAMICS, INC                                                           </a>
+    </div></td>
+    <td>PLOW   </td>
+    <td>25960R105</td>
+    <td>25-APR-2023</td>
+    <td>Annual</td>
+  </tr>
+
+
+	
+
+
+
+
+
+
+
+
+  <tr class='AltRow' >
+   <td><div class="left-align" style="position:static;">
+<a href="javascript:gotoMeetingDetail('3207805',
+'08-MAY-2023',
+'Annual',
+'26210V102',
+'DRVN  ',
+'US26210V1026',
+'DRIVEN BRANDS HOLDINGS INC.                                                     ');" onmouseover="this.style.cursor='hand'">DRIVEN BRANDS HOLDINGS INC.                                                     </a>
+    </div></td>
+    <td>DRVN   </td>
+    <td>26210V102</td>
+    <td>08-MAY-2023</td>
+    <td>Annual</td>
+  </tr>
+
+
+	
+
+
+</table>
+<br />
+<br />
+</div>
+    
+    <div class="footer"> 
+	
+
+       
+       
+   
+   <p>    Powered by <a href="http://www.broadridge.com/">Broadridge
+  </a>Investor    Communication Services, ©2004-2023 Broadridge
+  Financial Solutions, Inc.</p>
+<p>
+  <strong>
+    <em>            Contact JPMorgan Distribution Services, Inc. at
+      1-800-480-4111 for            a fund prospectus or download it
+      from this site. Investors should            carefully consider the
+      investment objectives and risks as well as            charges and
+      expenses of the mutual fund before investing. The
+      prospectus contains this and other information about the mutual
+      fund. Read the prospectus carefully before investing.        </em></strong></p>
+<p>    Opinions and statements of financial market trends that are based
+  on    current market conditions constitute our judgment and are
+  subject to change    without notice. We believe the information
+  provided here is reliable but    should not be assumed to be accurate
+  or complete. The views and strategies    described may not be suitable
+  for all investors.</p>
+<p>    J.P. Morgan Funds are distributed by JPMorgan Distribution
+  Services, Inc.,    which is an affiliate of JPMorgan Chase &amp; Co.
+  Affiliates of JPMorgan    Chase &amp; Co. receive fees for providing
+  various services to the funds.    JPMorgan Distribution Services, Inc.
+  is a member of FINRA.</p>
+<p>    J.P. Morgan Asset Management is the marketing name for the asset
+  management    businesses of JPMorgan Chase &amp; Co. Those businesses
+  include, but are    not limited to, J.P. Morgan Investment Management
+  Inc., Security Capital    Research &amp; Management Incorporated and
+  J.P. Morgan Alternative Asset    Management, Inc.</p>
+  
+  
+   
+       
+  
+   
+       
+  
+    		<br/>
+    	
+    	<!--  Show footer for ce11 element -->
+    	<a class="footer-link"
+  href="https://www.broadridge.com/legal/privacy-statement-english"
+  target="_blank">Privacy Policy</a>
+ | <a class="footer-link" href="https://www.broadridge.com/terms.asp"
+  target="_blank">Terms and Conditions</a>
+    	
+    	<!--  Show footer for ce15 element -->
+    	
+       
+       
+       <!--  Show footer for ce16 element -->
+       
+       
+  
+  
+    </div>
+
+</div>
+</body>
+</form>
+
+
+
+
+
+</html> 
+
